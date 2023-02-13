@@ -2600,13 +2600,64 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
             with open(configfile, "w") as f:
                 f.write(data)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# PronterApp这是一个class，并且是wx.App这个class的一个subclass，wxApp是从wxPython library来的
 class PronterApp(wx.App):
 
+# “mainwindow”是类的所有实例共享的类变量。 它最初设置为无。
     mainwindow = None
 
+# init方法是类的构造函数，在创建类的对象时调用。 
+# 这个方法有两个参数，*args 和 **kwargs，这允许它接受可变数量的位置和关键字参数。 
     def __init__(self, *args, **kwargs):
+        # 这里的super又是另一个class了
         super(PronterApp, self).__init__(*args, **kwargs)
+
+        # 方法 SetAppName() 将应用程序的名称设置为 “Pronterface”
         self.SetAppName("Pronterface")
+        # “locale”变量设置为系统的区域设置，从 wx.Locale 类的 GetSystemLanguage() 方法获得。
         self.locale = wx.Locale(wx.Locale.GetSystemLanguage())
+        # PronterWindow 类的一个实例被创建并存储在“mainwindow”变量中。
         self.mainwindow = PronterWindow(self)
+        # 调用 “mainwindow” 实例的 Show() 方法来显示窗口。
         self.mainwindow.Show()
+
+
+
+# !!!! important, 我试一下是不是在这里加event handler
+#    def on_button_click(self, event):
+#        global a
+#        if(a == 0):
+#            self.counter += 1
+#            a = 1
+#        else:
+#            self.counter -= 1
+#            a = 0
+#        print("Button clicked", self.counter, "times")
+
+
