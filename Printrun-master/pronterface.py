@@ -30,6 +30,11 @@ except:
 
 # include the PronterApp class from the "pronterface" module of the "printrun" package
 from printrun.pronterface import PronterApp
+from printcore import printcore
+
+flag = 0
+
+
 
 # 在“main”块中，脚本使用 getopt 库来处理命令行选项和参数。
 # 选项包括打印帮助消息、打印程序版本号、增加详细程度、启动时自动连接打印机、
@@ -68,8 +73,32 @@ if __name__ == '__main__':
 # 并调用其 MainLoop() 方法启动主应用程序循环。 
 # MainLoop() 方法为用户界面提供事件处理和控制 3D 打印机的逻辑。
     app = PronterApp(False) 
+    opCore = printcore()
     # 这里PronterApp是一个class，创建一个app变量，并将PronterApp实例化，传递参数为False
     # 具体PronterApp内部定义了哪些def功能，得去看PronterApp是怎么定义的
+
+
+
+
+
+    def restartMainLoop():
+        app.ExitMainLoop()
+        app.MainLoop()
+
+    def timer_handler(event):
+        opCore.send_now("M114")
+        # global flag
+        # if flag == 1:
+        #     print('flag is 1, interrupting...')
+        #     a = 0
+        #     flag = 0
+        #     restartMainLoop()
+
+    timer = wx.Timer(app)
+    app.Bind(wx.EVT_TIMER, timer_handler, timer)
+    timer.Start(10000) # Run the timer_handler function every 1000 milliseconds (1 second)
+
+
     try:
         app.MainLoop()
     except KeyboardInterrupt:

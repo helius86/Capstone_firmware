@@ -25,6 +25,7 @@ import subprocess
 import glob
 import logging
 import re
+import serial
 
 try: import simplejson as json
 except ImportError: import json
@@ -39,6 +40,31 @@ from .utils import install_locale, setup_logging, dosify, \
     prepare_command, check_rgb_color, check_rgba_color, compile_file, \
     write_history_to, read_history_from
 install_locale('pronterface')
+
+
+a = 0
+# activatedForce = ''
+# serESP32 = serial.Serial('COM7', 115200)
+# current_data = (str(serESP32.readline())) # this has to be global variable because we monitor anytime the button is activated
+# if current_data.startswith("1"):
+#     activatedForce = current_data.split(';')[1] # records the force when activation status is 1
+#     readFile = open("results.txt", "r")
+
+    # send command  & records endPosition
+    # self.p.send_now('M114')
+#startPosition = 55
+
+#下面要解决发指令的问题
+
+
+
+
+
+
+
+
+
+
 
 try:
     import wx
@@ -775,6 +801,26 @@ class PronterWindow(MainWindow, pronsole.pronsole):
                 self.logbox.SetInsertionPointEnd()
                 self.logbox.AppendText(text)
 
+
+
+
+            # try add text to file
+            #sys.stdout = open('output.txt', 'a')
+            if text.startswith('X:'):
+                with open("output.txt", "a") as f:
+                    f.write(text + '\n')
+
+
+
+
+
+
+
+
+
+
+
+
         except UnicodeError:
             self.log(_("Attempted to write invalid text to console, which could be due to an invalid baudrate"))
         except Exception as e:
@@ -902,6 +948,8 @@ class PronterWindow(MainWindow, pronsole.pronsole):
         
         self.menustrip.Append(m, _("&TestMenu")) # Appends the Shit option in the Manu
 
+
+        
 #    def CreateMenuBar(self):
 #        menubar = wx.MenuBar()
 #        filemenu = wx.Menu()
@@ -909,6 +957,49 @@ class PronterWindow(MainWindow, pronsole.pronsole):
 #        menubar.Append(filemenu, '&File')
 #        self.SetMenuBar(menubar)
 #        self.Bind(wx.EVT_MENU, self.OnShowPicture, showpicture)
+
+
+# Test 3: variable change by clicking
+        m = wx.Menu()
+        click = m.Append(wx.ID_ANY, 'click', 'click')
+        self.counter = 0
+        self.Bind(wx.EVT_MENU, self.on_button_click, click)
+
+        self.log("test...")
+        
+        #self.Bind(wx.EVT_MENU, self.outputTerminal, click)
+        
+        self.menustrip.Append(m, _("&ClickTest")) # Appends the Shit option in the Manu
+
+
+
+        m = wx.Menu()
+        dataProcessing = m.Append(wx.ID_ANY, 'data processing', 'data processing')
+        self.Bind(wx.EVT_MENU, self.dataProcessing, dataProcessing)
+    
+        self.menustrip.Append(m, _("&data processing")) # Appends the Shit option in the Manu
+
+
+    def dataProcessing(self, event):
+        
+        readFile = open("results.txt", "r")
+        #if current_data.startswith("1"):
+        ##
+
+
+    def on_button_click(self, event):
+        global a
+        if(a == 0):
+            self.counter += 1
+            a = 1
+            print("X:1.00 Y:2.00 Z:3.00 E:0.00 Count X:0 Y:0 Z:0")
+        else:
+            self.counter -= 1
+            a = 0
+        print("Button clicked", self.counter, "times")
+
+
+
 
     def OnShowPicture(self, event):
         frame = wx.Frame(None, title="Picture Window", size=(400, 300))
@@ -1460,6 +1551,49 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         self.sdprinting = False
         self.on_startprint()
         self.p.startprint(self.fgcode)
+
+
+
+        # 假设没有queue，先用send_now，不行再用什么send之类的sb
+
+        serESP32 = serial.Serial('COM7', 115200)
+        # current_data = (str(serESP32.readline())) # this has to be
+        
+        while True:
+            current_data = (str(serESP32.readline()))
+
+            activatedForce = current_data.split(';')[1] # records
+            with open("results.txt", "w") as file1:
+                file1.write(activatedForce + '\n')
+                
+
+            if current_data.startswith("1"):
+                break
+            
+        
+            self.p.send("往下挪")
+
+
+
+
+        return 0
+        # 假设print完到这里
+        # print("nnmbsl")
+
+# activatedForce = ''
+# serESP32 = serial.Serial('COM7', 115200)
+# current_data = (str(serESP32.readline())) # this has to be global variable because we monitor anytime the button is activated
+# if current_data.startswith("1"):
+#     activatedForce = current_data.split(';')[1] # records the force when activation status is 1
+#     readFile = open("results.txt", "r")
+
+    # send command  & records endPosition
+    # self.p.send_now('M114')
+#startPosition = 55
+
+        
+
+
 
     def sdprintfile(self, event):
         self.extra_print_time = 0
@@ -2649,15 +2783,5 @@ class PronterApp(wx.App):
 
 
 
-# !!!! important, 我试一下是不是在这里加event handler
-#    def on_button_click(self, event):
-#        global a
-#        if(a == 0):
-#            self.counter += 1
-#            a = 1
-#        else:
-#            self.counter -= 1
-#            a = 0
-#        print("Button clicked", self.counter, "times")
 
 
