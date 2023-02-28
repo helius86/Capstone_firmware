@@ -980,6 +980,15 @@ class PronterWindow(MainWindow, pronsole.pronsole):
         self.menustrip.Append(m, _("&data processing")) # Appends the Shit option in the Manu
 
 
+# 2023/2/27 移植print file 方法 到自定义菜单
+        m = wx.Menu()
+        SinglePointTest = m.Append(wx.ID_ANY, 'Start Single Point Test', 'Start Single Point Test')
+        self.Bind(wx.EVT_MENU, self.printfile, SinglePointTest)
+    
+        self.menustrip.Append(m, _("&Start Single Point Test")) # Appends the Shit option in the Manu
+
+
+
     def dataProcessing(self, event):
         
         readFile = open("results.txt", "r")
@@ -1570,8 +1579,8 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
             if current_data.startswith("1"):
                 break
             
-        
-            self.p.send("往下挪")
+        # 往下挪 1mm
+            #self.p.send("G0 Z-1")
 
 
 
