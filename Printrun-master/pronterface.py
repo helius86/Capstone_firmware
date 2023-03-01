@@ -94,9 +94,9 @@ if __name__ == '__main__':
         #     flag = 0
         #     restartMainLoop()
 
-    timer = wx.Timer(app)
-    app.Bind(wx.EVT_TIMER, timer_handler, timer)
-    timer.Start(10000) # Run the timer_handler function every 1000 milliseconds (1 second)
+    # timer = wx.Timer(app)
+    # app.Bind(wx.EVT_TIMER, timer_handler, timer)
+    # timer.Start(10000) # Run the timer_handler function every 1000 milliseconds (1 second)
 
 
     try:

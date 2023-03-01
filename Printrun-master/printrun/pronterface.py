@@ -1561,26 +1561,30 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         self.on_startprint()
         self.p.startprint(self.fgcode)
 
-
+        #self.p.send("G91")
+        #self.p.send("G0 Z-0.01")
 
         # 假设没有queue，先用send_now，不行再用什么send之类的sb
 
-        serESP32 = serial.Serial('COM7', 115200)
+        serESP32 = serial.Serial('COM4', 115200)
         # current_data = (str(serESP32.readline())) # this has to be
         
         while True:
             current_data = (str(serESP32.readline()))
 
-            activatedForce = current_data.split(';')[1] # records
+            #activatedForce = current_data.split(';')[1] # records
+            activatedForce = current_data
             with open("results.txt", "w") as file1:
                 file1.write(activatedForce + '\n')
                 
+            self.p.send("G91")
+            self.p.send("G0 Z-0.01")
 
             if current_data.startswith("1"):
                 break
             
         # 往下挪 1mm
-            #self.p.send("G0 Z-1")
+        
 
 
 
