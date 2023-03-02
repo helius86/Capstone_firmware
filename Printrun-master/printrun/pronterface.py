@@ -802,7 +802,7 @@ class PronterWindow(MainWindow, pronsole.pronsole):
                 self.logbox.AppendText(text)
 
 
-
+#
 
             # try add text to file
             #sys.stdout = open('output.txt', 'a')
