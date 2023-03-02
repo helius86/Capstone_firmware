@@ -43,6 +43,8 @@ install_locale('pronterface')
 
 
 a = 0
+SinglePointsList = []
+endlocation = ''
 # activatedForce = ''
 # serESP32 = serial.Serial('COM7', 115200)
 # current_data = (str(serESP32.readline())) # this has to be global variable because we monitor anytime the button is activated
@@ -782,6 +784,7 @@ class PronterWindow(MainWindow, pronsole.pronsole):
             wx.CallAfter(self.addtexttolog, l)
 
     def addtexttolog(self, text):
+        global endlocation
         try:
             max_length = 20000
             current_length = self.logbox.GetLastPosition()
@@ -807,8 +810,16 @@ class PronterWindow(MainWindow, pronsole.pronsole):
             # try add text to file
             #sys.stdout = open('output.txt', 'a')
             if text.startswith('X:'):
-                with open("output.txt", "a") as f:
-                    f.write(text + '\n')
+                #with open("output.txt", "a") as f:
+                #    f.write(text + '\n')
+                z_index = text.find('Z:')
+
+                if z_index != -1:  # If 'Z:' is found in the string
+                    # Extract the substring starting from the character after 'Z:'
+                    z_str = text[z_index+len('Z:'):].split()[0]
+                    # Convert the substring to a float number and store it in a variable
+                    
+                endlocation = z_str
 
 
 
@@ -982,12 +993,23 @@ class PronterWindow(MainWindow, pronsole.pronsole):
 
 # 2023/2/27 移植print file 方法 到自定义菜单
         m = wx.Menu()
-        SinglePointTest = m.Append(wx.ID_ANY, 'Start Single Point Test', 'Start Single Point Test')
+        SinglePointTest = m.Append(wx.ID_ANY, 'Start1')
+        EndSinglePointTest = m.Append(wx.ID_ANY, 'End Test')
         self.Bind(wx.EVT_MENU, self.printfile, SinglePointTest)
-    
-        self.menustrip.Append(m, _("&Start Single Point Test")) # Appends the Shit option in the Manu
+        self.Bind(wx.EVT_MENU, self.finishTest, EndSinglePointTest)
+        self.menustrip.Append(m, _("&Start")) # Appends the Shit option in the Manu
 
 
+    def finishTest(self, event):
+        global endlocation
+        global SinglePointsList
+        self.precmd('M114')
+        self.onecmd('M114')
+        time.sleep(1)
+        print(endlocation)
+        zdistance = 46 - float(endlocation)
+        SinglePointsList[0][3] = zdistance
+        print(SinglePointsList)
 
     def dataProcessing(self, event):
         
@@ -1569,26 +1591,38 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         serESP32 = serial.Serial('COM4', 115200)
         # current_data = (str(serESP32.readline())) # this has to be
         
+
+        
+        SinglePointsList.append([0,0,None,None])
+        point_index = 0
+        current_dataType = 2
+
+
         while True:
             current_data = (str(serESP32.readline()))
+            # print(current_data)
+            if current_data.startswith("b'"):
+                activatedForce = current_data.split(';')[1] # records
+                activatedSignal = current_data.split(';')[0]
+            #activatedForce = current_data
+            # with open("results.txt", "w") as file1:
+            #     file1.write(activatedForce + '\n')
+            
+            print(activatedForce)
+            print(activatedSignal)
+            if (activatedSignal == "b'1"):
+                SinglePointsList[point_index][current_dataType] = activatedForce 
+                break
 
-            #activatedForce = current_data.split(';')[1] # records
-            activatedForce = current_data
-            with open("results.txt", "w") as file1:
-                file1.write(activatedForce + '\n')
-                
             self.p.send("G91")
             self.p.send("G0 Z-0.01")
 
-            if current_data.startswith("1"):
-                break
             
-        # 往下挪 1mm
-        
-
-
-
-
+            
+        print(SinglePointsList)
+        # time.sleep(2)
+        # self.p.send("M114")
+        # time.sleep(1)
         return 0
         # 假设print完到这里
         # print("nnmbsl")

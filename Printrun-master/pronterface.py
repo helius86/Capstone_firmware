@@ -85,18 +85,18 @@ if __name__ == '__main__':
         app.ExitMainLoop()
         app.MainLoop()
 
-    def timer_handler(event):
-        opCore.send_now("M114")
-        # global flag
-        # if flag == 1:
-        #     print('flag is 1, interrupting...')
-        #     a = 0
-        #     flag = 0
-        #     restartMainLoop()
-
-    # timer = wx.Timer(app)
-    # app.Bind(wx.EVT_TIMER, timer_handler, timer)
-    # timer.Start(10000) # Run the timer_handler function every 1000 milliseconds (1 second)
+    # def timer_handler(event):
+    #     opCore.send_now("M114")
+    #     global flag
+    #     if flag == 1:
+    #          print('flag is 1, interrupting...')
+    #          a = 0
+    #          flag = 0
+    #          restartMainLoop()
+    # #opCore.send('M114')
+    # timerr = wx.Timer(app)
+    # app.Bind(wx.EVT_TIMER, timer_handler, timerr)
+    # timerr.Start(5000) # Run the timer_handler function every 1000 milliseconds (1 second)
 
 
     try:

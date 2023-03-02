@@ -1,0 +1,49 @@
+
+import math
+
+def generateTestpoints(radius_button, numPoints):
+    
+    
+    #testpoints
+    
+    radius = radius_button - 0.1 #so the very edge is not pressed
+    points = []
+    
+    points.append([0,0,None,None])
+    
+    # https://stackoverflow.com/questions/28567166/uniformly-distribute-x-points-inside-a-circle
+    # https://math.stackexchange.com/questions/227481/x-points-around-a-circle
+    boundary = math.sqrt(numPoints)
+    phi = (math.sqrt(5)+1)/2
+
+    for k in range(1,numPoints):
+
+        if (k > numPoints-boundary):
+            r = radius
+        else: 
+            r = radius*math.sqrt(k-1/2)/math.sqrt(numPoints-(boundary+1)/2) 
+       
+        angle = k*2*math.pi/phi/phi 
+        
+        curr_x = r*math.cos(angle)
+        curr_y = r*math.sin(angle)
+        
+        points.append([curr_x,curr_y,None,None])
+
+    return points
+
+
+
+def writeList2file(name, data_list):
+    file=open(name, mode='w')
+    for i in range(len(data_list)):
+        file.write(data_list[i]+'\n') #write each index to different lines
+    file.close()
+
+def print_2d_list(list):
+  for row in list:
+    print(" ".join(str(x) for x in row))
+
+points = generateTestpoints(5,10)
+print_2d_list(points)
+# writeList2file("points.txt", points)
